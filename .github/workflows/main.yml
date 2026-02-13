@@ -47,6 +47,8 @@ jobs:
 
       - name: Install perl
         shell: cmd
+        env:
+          PERL_SKIP_TTY_TEST: 1
         working-directory: work\perl-5.40.1\win32
         run: nmake installbare
 
