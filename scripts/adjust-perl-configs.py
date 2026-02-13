@@ -50,9 +50,7 @@ def adjust_config_pm(instdir: Path):
 
         new_lines += [line]
 
-    config_pm.with_suffix(".pm.orig").write_text(
-        "".join(old_lines), encoding="utf-8", errors="surrogateescape", newline=""
-    )
+    config_pm.rename(config_pm.with_suffix(".pm.orig"))
     config_pm.write_text(
         "".join(new_lines), encoding="utf-8", errors="surrogateescape", newline=""
     )
@@ -100,9 +98,7 @@ def adjust_config_heavy_pl(instdir: Path):
 
         new_lines += [line]
 
-    config_heavy_pl.with_suffix(".pl.orig").write_text(
-        "".join(old_lines), encoding="utf-8", errors="surrogateescape", newline=""
-    )
+    config_heavy_pl.rename(config_heavy_pl.with_suffix(".pl.orig"))
     config_heavy_pl.write_text(
         "".join(new_lines), encoding="utf-8", errors="surrogateescape", newline=""
     )
