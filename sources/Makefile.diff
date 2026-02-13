@@ -1,0 +1,40 @@
+--- Makefile.orig	2024-12-31 19:25:55.000000000 +0100
++++ Makefile	2025-02-15 20:58:59.744714100 +0100
+@@ -19,8 +19,8 @@
+ # Set these to wherever you want "nmake install" to put your
+ # newly built perl.
+ #
+-INST_DRV	= c:
+-INST_TOP	= $(INST_DRV)\perl
++INST_DRV	= D:
++INST_TOP	= $(INST_DRV)\tlperl
+ 
+ #
+ # Uncomment if you want to build a 32-bit Perl using a 32-bit compiler
+@@ -97,7 +97,7 @@
+ # HKEY_CURRENT_USER\Software\Perl and HKEY_LOCAL_MACHINE\Software\Perl in
+ # the Registry.
+ #
+-#USE_NO_REGISTRY = define
++USE_NO_REGISTRY = define
+ 
+ #
+ # uncomment exactly one of the following
+@@ -109,7 +109,7 @@
+ # Visual C++ 2019 (aka Visual C++ 14.2) (full version or Community Edition)
+ #CCTYPE		= MSVC142
+ # Visual C++ 2022 (aka Visual C++ 14.3) (full version or Community Edition)
+-#CCTYPE		= MSVC143
++CCTYPE		= MSVC143
+ 
+ #
+ # If you are using Intel C++ Compiler uncomment this
+@@ -230,7 +230,7 @@
+ # set this to your email address (perl will guess a value from
+ # your loginname and your hostname, which may not be right)
+ #
+-#EMAIL		=
++EMAIL		= tex-live@tug.org
+ 
+ ##
+ ## Build configuration ends.
