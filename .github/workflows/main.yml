@@ -1,0 +1,57 @@
+name: Build tlperl
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup MSVC (VS2022)
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Create work directory
+        shell: pwsh
+        run: New-Item -ItemType Directory -Force work
+
+      - name: Extract all tar.gz files from sources to work
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path sources -Filter *.tar.gz | ForEach-Object {
+            Write-Host "Extracting $($_.Name)"
+            tar -xzf $_.FullName -C work
+          }
+
+      - name: Adjust perl sources
+        run: python scripts/adjust-perl-sources.py work/perl-5.40.1
+
+      - name: Build perl
+        shell: cmd
+        working-directory: work\perl-5.40.1\win32
+        run: nmake
+
+      - name: Test perl
+        shell: cmd
+        working-directory: work\perl-5.40.1\win32
+        run: nmake test
+
+      - name: Install perl
+        shell: cmd
+        working-directory: work\perl-5.40.1\win32
+        run: nmake installbare
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tlperl
+          path: work/inst
