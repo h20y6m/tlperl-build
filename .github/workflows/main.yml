@@ -13,7 +13,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
 
       - name: Setup MSVC (VS2022)
         uses: ilammy/msvc-dev-cmd@v1
