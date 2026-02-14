@@ -2,11 +2,27 @@ name: Build tlperl
 
 on:
   workflow_dispatch:
+    inputs:
+      skip_perl_tests:
+        description: 'Skip perl tests?'
+        type: boolean
+        default: false
 
 env:
   PERL_SKIP_TTY_TEST: 1
   PERL_VERSION: 5.40.1
   MATH_INT64_VERSION: 0.57
+  IO_STRING_VERSION: 1.08
+  FILE_WHICH_VERSION: 1.27
+  DIGEST_SHA_VERSION: 6.04
+  ENCODE_COMPAT_VERSION: 0.07
+  ENCODE_LOCALE_VERSION: 1.05
+  WIN32_API_VERSION: 0.84
+  WIN32_WINERROR_VERSION: 0.04
+  WIN32API_REGISTRY_VERSION: 0.33
+  WIN32_CONSOLE_VERSION: 0.10
+  WIN32_TIEREGISTRY_VERSION: 0.30
+  WIN32_SHORTCUT_VERSION: 0.08
 
 jobs:
   build:
@@ -37,10 +53,12 @@ jobs:
             tar -xzf $_.FullName -C work
           }
 
+      # BUILDING PERL
+
       - name: Adjust perl sources
         run: python scripts/adjust-perl-sources.py work/perl-${{ env.PERL_VERSION }} work/inst
 
-      - name: Build perl
+      - name: Build perl ${{ env.PERL_VERSION }}
         shell: cmd
         working-directory: work\perl-${{ env.PERL_VERSION }}\win32
         run: nmake
@@ -51,6 +69,7 @@ jobs:
         run: nmake test
 
       - name: Install perl
+        if: "${{ github.event.inputs.skip_perl_tests != 'true' }}"
         shell: cmd
         working-directory: work\perl-${{ env.PERL_VERSION }}\win32
         run: nmake installbare
@@ -62,13 +81,72 @@ jobs:
         shell: pwsh
         run: echo "$PWD\work\inst\bin" >> "$Env:GITHUB_PATH"
 
-      - name: Verify Perl Version
-        run: perl -V
+      - name: Verify perl version
+        run: perl -v && perl -V
+
+      # INSTALLING MODULES
 
       - name: Install Math::Int64 ${{ env.MATH_INT64_VERSION }}
         shell: cmd
         working-directory: work\Math-Int64-${{ env.MATH_INT64_VERSION }}
         run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install IO::String ${{ env.IO_STRING_VERSION }}
+        shell: cmd
+        working-directory: work\IO-String-${{ env.IO_STRING_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install File::Which ${{ env.FILE_WHICH_VERSION }}
+        shell: cmd
+        working-directory: work\File-Which-${{ env.FILE_WHICH_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install Digest::SHA ${{ env.DIGEST_SHA_VERSION }}
+        shell: cmd
+        working-directory: work\Digest-SHA-${{ env.DIGEST_SHA_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install Encode::compat ${{ env.ENCODE_COMPAT_VERSION }}
+        shell: cmd
+        working-directory: work\Encode-compat-${{ env.ENCODE_COMPAT_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install Encode::Locale ${{ env.ENCODE_LOCALE_VERSION }}
+        shell: cmd
+        working-directory: work\Encode-Locale-${{ env.ENCODE_LOCALE_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      ## Windows-specific:
+
+      - name: Install Win32::API ${{ env.WIN32_API_VERSION }}
+        shell: cmd
+        working-directory: work\Win32-API-${{ env.WIN32_API_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install Win32::WinError ${{ env.WIN32_WINERROR_VERSION }} (just copying WinError.pm to site/lib/Win32/)
+        run: cp sources/WinError.pm work/inst/site/lib/Win32/
+
+      - name: Install Win32API::Registry ${{ env.WIN32API_REGISTRY_VERSION }}
+        shell: cmd
+        working-directory: work\Win32API-Registry-${{ env.WIN32API_REGISTRY_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install Win32::Console ${{ env.WIN32_CONSOLE_VERSION }} (no tests)
+        shell: cmd
+        working-directory: work\Win32-Console-${{ env.WIN32_CONSOLE_VERSION }}
+        run: perl Makefile.PL && nmake && nmake install
+
+      - name: Install Win32::TieRegistry ${{ env.WIN32_TIEREGISTRY_VERSION }}
+        shell: cmd
+        working-directory: work\Win32-TieRegistry-${{ env.WIN32_TIEREGISTRY_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install Win32::Shortcut ${{ env.WIN32_SHORTCUT_VERSION }} (no tests)
+        shell: cmd
+        working-directory: work\Win32-Shortcut-${{ env.WIN32_SHORTCUT_VERSION }}
+        run: perl Makefile.PL && nmake && nmake install
+
+      # 
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
