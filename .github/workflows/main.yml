@@ -27,6 +27,41 @@ env:
   WIN32_CONSOLE_VERSION: "0.10"
   WIN32_TIEREGISTRY_VERSION: "0.30"
   WIN32_SHORTCUT_VERSION: "0.08"
+  CPANEL_JSON_XS_VERSION: "4.39"
+  TEST_HARNESS_VERSION: "3.50"
+  TEST_NEEDS_VERSION: "0.002010"
+  JSON_MAYBEXS_VERSION: "1.004008"
+  SOCKET_VERSION: "2.038"
+  DATE_PARSE_VERSION: "2.33"
+  HTTP_DATE_VERSION: "6.06"
+  FILE_LISTING_VERSION: "6.16"
+  IO_HTML_VERSION: "1.004"
+  TRY_TINY_VERSION: "0.32"
+  TEST_FATAL_VERSION: "0.017"
+  LWP_MEDIATYPES_VERSION: "6.04"
+  TEST_WARNINGS_VERSION: "0.038"
+  MIME_BASE32_VERSION: "1.303"
+  URI_VERSION: "5.31"
+  B_COW_VERSION: "0.007"
+  CLONE_VERSION: "0.47"
+  HTTP_MESSAGE_VERSION: "7.00"
+  HTML_TAGSET_VERSION: "3.24"
+  HTML_PARSER_VERSION: "3.83"
+  WWW_ROBOTRULES_VERSION: "6.02"
+  HTTP_NEGOTIATE_VERSION: "6.01"
+  NET_HTTP_VERSION: "6.23"
+  MODULE_BUILD_TINY_VERSION: "0.051"
+  HTTP_DAEMON_VERSION: "6.16"
+  EXTUTILS_CONFIG_VERSION: "0.010"
+  EXTUTILS_HELPERS_VERSION: "0.028"
+  EXTUTILS_INSTALLPATHS_VERSION: "0.012"
+  MOZILLA_CA_VERSION: "20250202"
+  HTTP_COOKIES_VERSION: "6.11"
+  TEST_REQUIRESINTERNET_VERSION: "0.05"
+  TEST_DEEP_VERSION: "1.204"
+  TEST_REQUIRES_VERSION: "0.11"
+  HTTP_COOKIEJAR_LWP_VERSION: "0.014"
+  LWP_VERSION: "6.77"
 
 jobs:
   build:
@@ -130,7 +165,7 @@ jobs:
         working-directory: work\Encode-Locale-${{ env.ENCODE_LOCALE_VERSION }}
         run: perl Makefile.PL && nmake && nmake test && nmake install
 
-      ## Windows-specific:
+      # Windows-specific:
 
       - name: Install Win32::API ${{ env.WIN32_API_VERSION }}
         shell: cmd
@@ -160,7 +195,188 @@ jobs:
         working-directory: work\Win32-Shortcut-${{ env.WIN32_SHORTCUT_VERSION }}
         run: perl Makefile.PL && nmake && nmake install
 
-      # 
+      #
+
+      - name: Install Cpanel::JSON::XS ${{ env.CPANEL_JSON_XS_VERSION }}
+        shell: cmd
+        working-directory: work\Cpanel-JSON-XS-${{ env.CPANEL_JSON_XS_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install Test::Harness ${{ env.TEST_HARNESS_VERSION }}
+        shell: cmd
+        working-directory: work\Test-Harness-${{ env.TEST_HARNESS_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install Test::Needs ${{ env.TEST_NEEDS_VERSION }}
+        shell: cmd
+        working-directory: work\Test-Needs-${{ env.TEST_NEEDS_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install JSON::MaybeXS ${{ env.JSON_MAYBEXS_VERSION }}
+        shell: cmd
+        working-directory: work\JSON-MaybeXS-${{ env.JSON_MAYBEXS_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      # LWP and dependencies, in order of compilation/installation:
+
+      - name: Install Socket ${{ env.SOCKET_VERSION }}
+        shell: cmd
+        working-directory: work\Socket-${{ env.SOCKET_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install Date::Parse ${{ env.DATE_PARSE_VERSION }} (file TimeDate-2.33.tar.gz)
+        shell: cmd
+        working-directory: work\TimeDate-${{ env.DATE_PARSE_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install HTTP::Date ${{ env.HTTP_DATE_VERSION }}
+        shell: cmd
+        working-directory: work\HTTP-Date-${{ env.HTTP_DATE_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install File::Listing ${{ env.FILE_LISTING_VERSION }}
+        shell: cmd
+        working-directory: work\File-Listing-${{ env.FILE_LISTING_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install IO::HTML ${{ env.IO_HTML_VERSION }}
+        shell: cmd
+        working-directory: work\IO-HTML-${{ env.IO_HTML_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install Try::Tiny ${{ env.TRY_TINY_VERSION }}
+        shell: cmd
+        working-directory: work\Try-Tiny-${{ env.TRY_TINY_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install Test::Fatal ${{ env.TEST_FATAL_VERSION }}
+        shell: cmd
+        working-directory: work\Test-Fatal-${{ env.TEST_FATAL_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install LWP::MediaTypes ${{ env.LWP_MEDIATYPES_VERSION }}
+        shell: cmd
+        working-directory: work\LWP-MediaTypes-${{ env.LWP_MEDIATYPES_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install Test::Warnings ${{ env.TEST_WARNINGS_VERSION }}
+        shell: cmd
+        working-directory: work\Test-Warnings-${{ env.TEST_WARNINGS_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install MIME::Base32 ${{ env.MIME_BASE32_VERSION }}
+        shell: cmd
+        working-directory: work\MIME-Base32-${{ env.MIME_BASE32_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install URI ${{ env.URI_VERSION }}
+        shell: cmd
+        working-directory: work\URI-${{ env.URI_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install B::COW ${{ env.B_COW_VERSION }}
+        shell: cmd
+        working-directory: work\B-COW-${{ env.B_COW_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install Clone ${{ env.CLONE_VERSION }}
+        shell: cmd
+        working-directory: work\Clone-${{ env.CLONE_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install HTTP::Message ${{ env.HTTP_MESSAGE_VERSION }}
+        shell: cmd
+        working-directory: work\HTTP-Message-${{ env.HTTP_MESSAGE_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install HTML::Tagset ${{ env.HTML_TAGSET_VERSION }}
+        shell: cmd
+        working-directory: work\HTML-Tagset-${{ env.HTML_TAGSET_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install HTML::Parser ${{ env.HTML_PARSER_VERSION }}
+        shell: cmd
+        working-directory: work\HTML-Parser-${{ env.HTML_PARSER_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install WWW::RobotRules ${{ env.WWW_ROBOTRULES_VERSION }}
+        shell: cmd
+        working-directory: work\WWW-RobotRules-${{ env.WWW_ROBOTRULES_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install HTTP::Negotiate ${{ env.HTTP_NEGOTIATE_VERSION }}
+        shell: cmd
+        working-directory: work\HTTP-Negotiate-${{ env.HTTP_NEGOTIATE_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install Net::HTTP ${{ env.NET_HTTP_VERSION }}
+        shell: cmd
+        working-directory: work\Net-HTTP-${{ env.NET_HTTP_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install HTTP::Daemon ${{ env.HTTP_DAEMON_VERSION }}
+        shell: cmd
+        working-directory: work\HTTP-Daemon-${{ env.HTTP_DAEMON_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install ExtUtils-Config ${{ env.EXTUTILS_CONFIG_VERSION }}
+        shell: cmd
+        working-directory: work\ExtUtils-Config-${{ env.EXTUTILS_CONFIG_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install ExtUtils-Helpers ${{ env.EXTUTILS_HELPERS_VERSION }}
+        shell: cmd
+        working-directory: work\ExtUtils-Helpers-${{ env.EXTUTILS_HELPERS_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install ExtUtils-InstallPaths ${{ env.EXTUTILS_INSTALLPATHS_VERSION }}
+        shell: cmd
+        working-directory: work\ExtUtils-InstallPaths-${{ env.EXTUTILS_INSTALLPATHS_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install Module::Build::Tiny ${{ env.MODULE_BUILD_TINY_VERSION }}
+        shell: cmd
+        working-directory: work\Module-Build-Tiny-${{ env.MODULE_BUILD_TINY_VERSION }}
+        run: perl Build.PL && Build && Build test && Build install
+
+      #   installed with perl Build.PL && Build && Build test && Build install
+
+      - name: Install Mozilla::CA ${{ env.MOZILLA_CA_VERSION }}
+        shell: cmd
+        working-directory: work\Mozilla-CA-${{ env.MOZILLA_CA_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install HTTP::Cookies ${{ env.HTTP_COOKIES_VERSION }}
+        shell: cmd
+        working-directory: work\HTTP-Cookies-${{ env.HTTP_COOKIES_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install Test::RequiresInternet ${{ env.TEST_REQUIRESINTERNET_VERSION }}
+        shell: cmd
+        working-directory: work\Test-RequiresInternet-${{ env.TEST_REQUIRESINTERNET_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install Test::Deep ${{ env.TEST_DEEP_VERSION }}
+        shell: cmd
+        working-directory: work\Test-Deep-${{ env.TEST_DEEP_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install Test::Requires ${{ env.TEST_REQUIRES_VERSION }}
+        shell: cmd
+        working-directory: work\Test-Requires-${{ env.TEST_REQUIRES_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install HTTP::CookieJar::LWP ${{ env.HTTP_COOKIEJAR_LWP_VERSION }} (file HTTP::CookieJar)
+        shell: cmd
+        working-directory: work\HTTP-CookieJar-${{ env.HTTP_COOKIEJAR_LWP_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      - name: Install LWP ${{ env.LWP_VERSION }} (file libwww-perl-6.77.tar.gz)
+        shell: cmd
+        working-directory: work\libwww-perl-${{ env.LWP_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
+
+      #
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
