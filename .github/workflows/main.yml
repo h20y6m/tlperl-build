@@ -64,12 +64,12 @@ jobs:
         run: nmake
 
       - name: Test perl
+        if: "${{ github.event.inputs.skip_perl_tests != 'true' }}"
         shell: cmd
         working-directory: work\perl-${{ env.PERL_VERSION }}\win32
         run: nmake test
 
       - name: Install perl
-        if: "${{ github.event.inputs.skip_perl_tests != 'true' }}"
         shell: cmd
         working-directory: work\perl-${{ env.PERL_VERSION }}\win32
         run: nmake installbare
