@@ -7,6 +7,10 @@ on:
         description: 'Skip perl tests?'
         type: boolean
         default: false
+      cache_perl_build:
+        description: 'Use/Update perl build cache? (Skip build if hit)'
+        type: boolean
+        default: false
 
 env:
   PERL_SKIP_TTY_TEST: 1
@@ -55,10 +59,20 @@ jobs:
 
       # BUILDING PERL
 
+      - name: Cache Perl Build
+        if: "${{ github.event.inputs.cache_perl_build == 'true' }}"
+        id: cache-perl
+        uses: actions/cache@v4
+        with:
+          path: work/perl-${{ env.PERL_VERSION }}
+          key: perl-${{ env.PERL_VERSION }}-${{ hashFiles('scripts/adjust-perl-sources.py') }}
+
       - name: Adjust perl sources
+        if: "${{ github.event.inputs.cache_perl_build != 'true' || steps.cache-perl.outputs.cache-hit != 'true' }}"
         run: python scripts/adjust-perl-sources.py work/perl-${{ env.PERL_VERSION }} work/inst
 
       - name: Build perl ${{ env.PERL_VERSION }}
+        if: "${{ github.event.inputs.cache_perl_build != 'true' || steps.cache-perl.outputs.cache-hit != 'true' }}"
         shell: cmd
         working-directory: work\perl-${{ env.PERL_VERSION }}\win32
         run: nmake
