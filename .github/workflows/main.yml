@@ -376,10 +376,32 @@ jobs:
         working-directory: work\libwww-perl-${{ env.LWP_VERSION }}
         run: perl Makefile.PL && nmake && nmake test && nmake install
 
+      # MODIFICATIONS FOR TEXLIVE
+
+      - name: Remove lib/pods directory (save some space)
+        shell: cmd
+        working-directory: work\inst\lib
+        run: if exist pods rmdir /s /q pods
+
+      - name: Clean up bin directory (Keep only .exe and .dll)
+        shell: pwsh
+        working-directory: work\inst\bin
+        run: |
+          Get-ChildItem -File |
+            Where-Object { $_.Extension -notmatch '\.(exe|dll)$' } |
+            Remove-Item -Force -Verbose
+
+      - name: Copy vcruntime
+        shell: pwsh
+        working-directory: work\inst\bin
+        run: |
+          Copy-Item "$Env:VCToolsRedistDir\x64\Microsoft.VC143.CRT\vcruntime140.dll" .
+          Copy-Item "$Env:VCToolsRedistDir\x64\Microsoft.VC143.CRT\vcruntime140_1.dll" .
+
       #
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: tlperl
+          name: tlperl-${{ env.PERL_VERSION }}-x64
           path: work/inst
