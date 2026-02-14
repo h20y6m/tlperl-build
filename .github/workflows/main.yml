@@ -3,6 +3,11 @@ name: Build tlperl
 on:
   workflow_dispatch:
 
+env:
+  PERL_SKIP_TTY_TEST: 1
+  PERL_VERSION: 5.40.1
+  MATH_INT64_VERSION: 0.57
+
 jobs:
   build:
     runs-on: windows-latest
@@ -33,34 +38,37 @@ jobs:
           }
 
       - name: Adjust perl sources
-        run: python scripts/adjust-perl-sources.py work/perl-5.40.1 work/inst
+        run: python scripts/adjust-perl-sources.py work/perl-${{ env.PERL_VERSION }} work/inst
 
       - name: Build perl
         shell: cmd
-        working-directory: work\perl-5.40.1\win32
+        working-directory: work\perl-${{ env.PERL_VERSION }}\win32
         run: nmake
 
       - name: Test perl
         shell: cmd
-        working-directory: work\perl-5.40.1\win32
-        env:
-          PERL_SKIP_TTY_TEST: 1
+        working-directory: work\perl-${{ env.PERL_VERSION }}\win32
         run: nmake test
 
       - name: Install perl
         shell: cmd
-        working-directory: work\perl-5.40.1\win32
+        working-directory: work\perl-${{ env.PERL_VERSION }}\win32
         run: nmake installbare
 
       - name: Adjust perl Config.pm and Config_heavy.pl
         run: python scripts/adjust-perl-configs.py work/inst
 
       - name: Add Perl bin to PATH
-        shell: cmd
-        run: echo ${{ github.workspace }}\work\inst\bin >> %GITHUB_PATH%
+        shell: pwsh
+        run: echo "$PWD\work\inst\bin" >> "$Env:GITHUB_PATH"
 
       - name: Verify Perl Version
         run: perl -V
+
+      - name: Install Math::Int64 ${{ env.MATH_INT64_VERSION }}
+        shell: cmd
+        working-directory: work\Math-Int64-${{ env.MATH_INT64_VERSION }}
+        run: perl Makefile.PL && nmake && nmake test && nmake install
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
