@@ -15,6 +15,6 @@ This repository provides a build setup for tlperl (Perl for TeX Live).
 * Net::HTTP 6.24
 * ExtUtils-InstallPaths 0.015
 * Module::Build::Tiny 0.052
-* Mozilla::CA 20260602
+* Mozilla::CA 20250602
 * Test::Deep 1.205
 * LWP 6.81
