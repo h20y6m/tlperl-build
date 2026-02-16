@@ -7,6 +7,7 @@ This repository provides a build setup for tlperl (Perl for TeX Live).
 ### TeX Live 2026
 
 * Perl 5.42.0
+* Cpanel::JSON::XS 4.40
 * Test::Harness 3.52
 * Socket 2.040
 * Test::Fatal 0.018

@@ -105,7 +105,8 @@ Win32::Console 0.10 (no tests)
 Win32::TieRegistry 0.30
 Win32::Shortcut 0.08 (no tests)
 
-Cpanel::JSON::XS 4.39
+Cpanel::JSON::XS 4.40
+  installed perl Makefile.PL && gmake && gmake test && gmake install
 Test::Harness 3.52
 Test::Needs 0.002010
 JSON::MaybeXS 1.004008

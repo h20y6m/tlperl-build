@@ -27,7 +27,7 @@ env:
   WIN32_CONSOLE_VERSION: "0.10"
   WIN32_TIEREGISTRY_VERSION: "0.30"
   WIN32_SHORTCUT_VERSION: "0.08"
-  CPANEL_JSON_XS_VERSION: "4.39"
+  CPANEL_JSON_XS_VERSION: "4.40"
   TEST_HARNESS_VERSION: "3.52"
   TEST_NEEDS_VERSION: "0.002010"
   JSON_MAYBEXS_VERSION: "1.004008"
@@ -200,7 +200,7 @@ jobs:
       - name: Install Cpanel::JSON::XS ${{ env.CPANEL_JSON_XS_VERSION }}
         shell: cmd
         working-directory: work\Cpanel-JSON-XS-${{ env.CPANEL_JSON_XS_VERSION }}
-        run: perl Makefile.PL && nmake && nmake test && nmake install
+        run: perl Makefile.PL && gmake && gmake test && gmake install
 
       - name: Install Test::Harness ${{ env.TEST_HARNESS_VERSION }}
         shell: cmd
