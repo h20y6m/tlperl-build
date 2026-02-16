@@ -200,7 +200,7 @@ jobs:
       - name: Install Cpanel::JSON::XS ${{ env.CPANEL_JSON_XS_VERSION }}
         shell: cmd
         working-directory: work\Cpanel-JSON-XS-${{ env.CPANEL_JSON_XS_VERSION }}
-        run: perl Makefile.PL && gmake && gmake test && gmake install
+        run: perl Makefile.PL MAKE=gmake && gmake && gmake test && gmake install
 
       - name: Install Test::Harness ${{ env.TEST_HARNESS_VERSION }}
         shell: cmd
