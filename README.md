@@ -2,7 +2,18 @@
 
 This repository provides a build setup for tlperl (Perl for TeX Live).
 
-## Module Update
+## `sources` directory
+
+Keep in sync with `Master/sources/tlperl` in the TeX Live Subversion repository.
+
+## Update work
+
+* [Download the latest stable version of Perl](https://www.perl.org/get.html).
+* Search for modules in [meta::cpan](https://metacpan.org/) and download the latest version.
+* Update the version in the `env:` section of `.github/workflows/main.yml`.
+* Update `sources/tlperl.README`.
+
+## Updated Module
 
 ### TeX Live 2026
 

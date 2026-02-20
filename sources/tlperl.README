@@ -2,8 +2,9 @@ NOTES ON BUILDING TLPERL 2026
 
 Compiler choice
 
-I used the Microsoft compiler, component 'Visual Studio Build Tools
-2022'.
+I used the Microsoft C/C++ compiler from Visual Studio 2022.
+
+You may also be able to use Visual Studio Build Tools 2022.
 
 License comment on the download page:
 
@@ -15,7 +16,15 @@ be covered.
 
 BUILD PLATFORM
 
-Windows 11 Pro, build 26100.3194
+tlperl 2026 was built on GitHub Actions Windows runner.
+Repository: https://github.com/h20y6m/tlperl-build
+Environment:
+ * Windows Server 2025 Datacenter build 26100
+ * Visual Studio 2022 Enterprise
+    * VCToolsVersion: 14.44.35207
+
+If you are doing this locally, you will probably need an English environment
+(at least in a Japanese environment there are problems building Perl).
 
 GETTING THE PERL SOURCE
 
@@ -155,8 +164,25 @@ MODIFICATIONS FOR TEXLIVE
 - The lib/pods directory has been removed, to save some space.
 - The bin subdirectory now only contains exe- and dll files;
   batch files, Perl scripts and .pdb files have been removed.
+- All .pdb files have been removed.
 - Copied from elsewhere: vcruntime140.dll and vcruntime140_1.dll
   (vc redistributables).
+
+UPDATE TLPERL ON SVN
+
+See Master/tlpkg/doc/releng.txt "B. Specifics for tlperl update:".
+
+If using TortoiseSVN:
+- In Explorer (not SVN!), delete the Master/tlpkg/tlperl folder except
+  for README.TEXLIVE.
+- Extract the new version you built into the tlperl folder.
+- Right-click the tlperl folder and select "Check for modifications".
+- Select all files with a status of "Missing", right-click, and select "Remove".
+- Select all files with a status of "Non-versioned", right-click, and select "Add".
+- Select the added .exe and .dll files, right-click, and select "Properties", "New",
+  "Executable", and check "Executable."
+- Update tlperl/README.TEXLIVE.
+- Ready to commit.
 
 Siep Kroonenberg
 Updated by: Yukimasa Morimi
