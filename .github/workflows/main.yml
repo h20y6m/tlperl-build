@@ -1,20 +1,10 @@
 name: Build tlperl
 
-on:
-  workflow_dispatch:
-    inputs:
-      skip_perl_tests:
-        description: 'Skip perl tests?'
-        type: boolean
-        default: false
-      cache_perl_build:
-        description: 'Use/Update perl build cache? (Skip build if hit)'
-        type: boolean
-        default: false
+on: push
 
 env:
   PERL_SKIP_TTY_TEST: 1
-  PERL_VERSION: "5.42.0"
+  PERL_VERSION: "5.42.1"
   MATH_INT64_VERSION: "0.57"
   IO_STRING_VERSION: "1.08"
   FILE_WHICH_VERSION: "1.27"
@@ -32,7 +22,7 @@ env:
   TEST_NEEDS_VERSION: "0.002010"
   JSON_MAYBEXS_VERSION: "1.004008"
   SOCKET_VERSION: "2.040"
-  DATE_PARSE_VERSION: "2.33"
+  DATE_PARSE_VERSION: "2.35"
   HTTP_DATE_VERSION: "6.06"
   FILE_LISTING_VERSION: "6.16"
   IO_HTML_VERSION: "1.004"
@@ -43,7 +33,7 @@ env:
   MIME_BASE32_VERSION: "1.303"
   URI_VERSION: "5.34"
   B_COW_VERSION: "0.007"
-  CLONE_VERSION: "0.47"
+  CLONE_VERSION: "0.50"
   HTTP_MESSAGE_VERSION: "7.01"
   HTML_TAGSET_VERSION: "3.24"
   HTML_PARSER_VERSION: "3.83"
@@ -54,7 +44,7 @@ env:
   EXTUTILS_CONFIG_VERSION: "0.010"
   EXTUTILS_HELPERS_VERSION: "0.028"
   EXTUTILS_INSTALLPATHS_VERSION: "0.015"
-  MODULE_BUILD_TINY_VERSION: "0.052"
+  MODULE_BUILD_TINY_VERSION: "0.053"
   MOZILLA_CA_VERSION: "20250602"
   HTTP_COOKIES_VERSION: "6.11"
   TEST_REQUIRESINTERNET_VERSION: "0.05"
@@ -68,17 +58,18 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v6
         with:
           python-version: '3.13'
 
-      - name: Setup MSVC (VS2022)
+      - name: Set up MSVC (VS2022)
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
+          vsversion: "2022"
 
       - name: Create work directory
         shell: pwsh
@@ -95,25 +86,24 @@ jobs:
       # BUILDING PERL
 
       - name: Cache Perl Build
-        if: "${{ github.event.inputs.cache_perl_build == 'true' }}"
         id: cache-perl
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: work/perl-${{ env.PERL_VERSION }}
-          key: perl-${{ env.PERL_VERSION }}-${{ hashFiles('scripts/adjust-perl-sources.py') }}
+          key: perl-${{ env.PERL_VERSION }}-vc${{ env.VCToolsVersion }}-patch${{ hashFiles('scripts/adjust-perl-sources.py') }}
 
       - name: Adjust perl sources
-        if: "${{ github.event.inputs.cache_perl_build != 'true' || steps.cache-perl.outputs.cache-hit != 'true' }}"
+        if: "${{ steps.cache-perl.outputs.cache-hit != 'true' }}"
         run: python scripts/adjust-perl-sources.py work/perl-${{ env.PERL_VERSION }} work/inst
 
       - name: Build perl ${{ env.PERL_VERSION }}
-        if: "${{ github.event.inputs.cache_perl_build != 'true' || steps.cache-perl.outputs.cache-hit != 'true' }}"
+        if: "${{ steps.cache-perl.outputs.cache-hit != 'true' }}"
         shell: cmd
         working-directory: work\perl-${{ env.PERL_VERSION }}\win32
         run: nmake
 
       - name: Test perl
-        if: "${{ github.event.inputs.skip_perl_tests != 'true' }}"
+        if: "${{ steps.cache-perl.outputs.cache-hit != 'true' }}"
         shell: cmd
         working-directory: work\perl-${{ env.PERL_VERSION }}\win32
         run: nmake test
@@ -406,7 +396,7 @@ jobs:
       #
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: tlperl-${{ env.PERL_VERSION }}-x64
           path: work/inst
