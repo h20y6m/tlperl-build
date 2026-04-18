@@ -66,10 +66,80 @@ jobs:
           python-version: '3.13'
 
       - name: Set up MSVC (VS2022)
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64
-          vsversion: "2022"
+        shell: pwsh
+        run: |
+          # Setup MSVC Environment Variables
+          $arch = "x64"
+          $vsversion = "[17.0,18.0)"
+
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          # Write-Host "::notice::vswhere = [$vswhere]"
+
+          if (-not (Test-Path $vswhere)) {
+            Write-Error "vswhere.exe not found"
+            exit 1
+          }
+
+          if ("$vsversion" -ne "") {
+            $vspath = & $vswhere -version $vsversion -products * -requires Microsoft.Component.MSBuild -property installationPath
+          } else {
+            $vspath = & $vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
+          }
+          # Write-Host "::notice::vspath = [$vspath]"
+
+          if (-not (Test-Path $vspath)) {
+            if ("$vsversion" -ne "") {
+              Write-Error "Visual Studio $vsversion not found"
+            } else {
+              Write-Error "Visual Studio not found"
+            }
+            exit 1
+          }
+
+          $vcvars = Join-Path $vspath "VC\Auxiliary\Build\vcvarsall.bat"
+          # Write-Host "::notice::vcvars = [$vcvars]"
+
+          if (-not (Test-Path $vcvars)) {
+            Write-Error "vcvarsall.bat not found"
+            exit 1
+          }
+
+          Write-Host "Found with vswhere: $vcvars"
+
+          # Save environment variables before running vcvarsall.bat
+          $before = @{}
+          cmd /c "SET" | ForEach-Object {
+            if ($_ -match "^(.*?)=(.*)$") {
+              $before[$matches[1]] = $matches[2]
+            }
+          }
+
+          # Run vcvarsall.bat and capture environment variables
+          $after = cmd /c "`"$vcvars`" $arch >NUL && SET"
+
+          # vcvarsall.bat should set "INCLUDE"
+          if (-not ($after -match "^INCLUDE=")) {
+            Write-Error "vcvarsall.bat failed"
+            exit 1
+          }
+
+          Write-Host "::group::Environment variables"
+
+          # Set the added or modified environment variables
+          $after | ForEach-Object {
+            if ($_ -match "^(.*?)=(.*)$") {
+              $key = $matches[1]
+              $val = $matches[2]
+              if (-not $before.ContainsKey($key) -or $before[$key] -ne $val) {
+                Write-Host "Setting $key"
+                "$key=$val" >> $env:GITHUB_ENV
+              }
+            }
+          }
+
+          Write-Host "::endgroup::"
+
+          Write-Host "Configured Developer Command Prompt"
 
       - name: Create work directory
         shell: pwsh
