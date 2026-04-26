@@ -1,13 +1,13 @@
---- Makefile.orig	2024-12-31 19:25:55.000000000 +0100
-+++ Makefile	2025-02-15 20:58:59.744714100 +0100
+--- win32/Makefile	2025-06-25 00:23:21.000000000 +0900
++++ win32/Makefile	2026-04-26 22:51:00.485398500 +0900
 @@ -19,8 +19,8 @@
  # Set these to wherever you want "nmake install" to put your
  # newly built perl.
  #
 -INST_DRV	= c:
 -INST_TOP	= $(INST_DRV)\perl
-+INST_DRV	= D:
-+INST_TOP	= $(INST_DRV)\tlperl
++INST_DRV	= C:
++INST_TOP	= $(INST_DRV)\texlive\2026\tlpkg\tlperl
  
  #
  # Uncomment if you want to build a 32-bit Perl using a 32-bit compiler
@@ -38,3 +38,15 @@
  
  ##
  ## Build configuration ends.
+--- win32/perlexe.manifest	2023-12-22 19:47:14.000000000 +0900
++++ win32/perlexe.manifest	2026-04-26 22:59:10.238606400 +0900
+@@ -29,4 +29,9 @@
+         <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"/>
+       </application>
+     </compatibility>
++    <application>
++      <windowsSettings>
++        <activeCodePage xmlns="http://schemas.microsoft.com/SMI/2019/WindowsSettings">UTF-8</activeCodePage>
++      </windowsSettings>
++    </application>
+ </assembly>

@@ -90,11 +90,13 @@ jobs:
         uses: actions/cache@v5
         with:
           path: work/perl-${{ env.PERL_VERSION }}
-          key: perl-${{ env.PERL_VERSION }}-vc${{ env.VCToolsVersion }}-patch${{ hashFiles('scripts/adjust-perl-sources.py') }}
+          key: perl-${{ env.PERL_VERSION }}-vc${{ env.VCToolsVersion }}-patch${{ hashFiles('sources/perl.diff') }}
 
-      - name: Adjust perl sources
+      - name: Patch perl sources
         if: "${{ steps.cache-perl.outputs.cache-hit != 'true' }}"
-        run: python scripts/adjust-perl-sources.py work/perl-${{ env.PERL_VERSION }} work/inst
+        working-directory: work/perl-${{ env.PERL_VERSION }}
+        shell: bash
+        run: git apply --ignore-space-change -p0 ../../sources/perl.diff
 
       - name: Build perl ${{ env.PERL_VERSION }}
         if: "${{ steps.cache-perl.outputs.cache-hit != 'true' }}"
