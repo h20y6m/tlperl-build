@@ -1,16 +1,6 @@
 name: Build tlperl
 
-on:
-  workflow_dispatch:
-    inputs:
-      skip_perl_tests:
-        description: 'Skip perl tests?'
-        type: boolean
-        default: false
-      cache_perl_build:
-        description: 'Use/Update perl build cache? (Skip build if hit)'
-        type: boolean
-        default: false
+on: push
 
 env:
   PERL_SKIP_TTY_TEST: 1
@@ -68,17 +58,18 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v6
         with:
           python-version: '3.13'
 
-      - name: Setup MSVC (VS2022)
-        uses: ilammy/msvc-dev-cmd@v1
+      - name: Set up MSVC (VS2022)
+        uses: h20y6m/actions-setup-msvc-env@v1
         with:
           arch: x64
+          vsversion: "2022"
 
       - name: Create work directory
         shell: pwsh
@@ -95,25 +86,24 @@ jobs:
       # BUILDING PERL
 
       - name: Cache Perl Build
-        if: "${{ github.event.inputs.cache_perl_build == 'true' }}"
         id: cache-perl
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: work/perl-${{ env.PERL_VERSION }}
-          key: perl-${{ env.PERL_VERSION }}-${{ hashFiles('scripts/adjust-perl-sources.py') }}
+          key: perl-${{ env.PERL_VERSION }}-vc${{ env.VCToolsVersion }}-patch${{ hashFiles('scripts/adjust-perl-sources.py') }}
 
       - name: Adjust perl sources
-        if: "${{ github.event.inputs.cache_perl_build != 'true' || steps.cache-perl.outputs.cache-hit != 'true' }}"
+        if: "${{ steps.cache-perl.outputs.cache-hit != 'true' }}"
         run: python scripts/adjust-perl-sources.py work/perl-${{ env.PERL_VERSION }} work/inst
 
       - name: Build perl ${{ env.PERL_VERSION }}
-        if: "${{ github.event.inputs.cache_perl_build != 'true' || steps.cache-perl.outputs.cache-hit != 'true' }}"
+        if: "${{ steps.cache-perl.outputs.cache-hit != 'true' }}"
         shell: cmd
         working-directory: work\perl-${{ env.PERL_VERSION }}\win32
         run: nmake
 
       - name: Test perl
-        if: "${{ github.event.inputs.skip_perl_tests != 'true' }}"
+        if: "${{ steps.cache-perl.outputs.cache-hit != 'true' }}"
         shell: cmd
         working-directory: work\perl-${{ env.PERL_VERSION }}\win32
         run: nmake test
@@ -398,15 +388,24 @@ jobs:
 
       - name: Copy vcruntime
         shell: pwsh
-        working-directory: work\inst\bin
-        run: |
-          Copy-Item "$Env:VCToolsRedistDir\x64\Microsoft.VC143.CRT\vcruntime140.dll" .
-          Copy-Item "$Env:VCToolsRedistDir\x64\Microsoft.VC143.CRT\vcruntime140_1.dll" .
+        run: .github\scripts\copy-vc-runtime.ps1 -Path work\inst\bin -AdditionalDirs @("work\inst\lib\auto","work\inst\site\lib\auto")
 
       #
 
+      - name: Create zip
+        shell: pwsh
+        run: |
+          $zipPath = "tlperl-${{ env.PERL_VERSION }}-x64.zip"
+
+          Write-Host "Creating $zipPath ..."
+
+          Compress-Archive `
+              -Path "work/inst/*" `
+              -DestinationPath $zipPath `
+              -Force
+
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: tlperl-${{ env.PERL_VERSION }}-x64
-          path: work/inst
+          archive: false
+          path: tlperl-${{ env.PERL_VERSION }}-x64.zip
