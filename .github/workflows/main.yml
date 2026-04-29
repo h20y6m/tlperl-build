@@ -66,10 +66,10 @@ jobs:
           python-version: '3.13'
 
       - name: Set up MSVC (VS2022)
-        uses: h20y6m/actions-setup-msvc-env@v1
+        uses: h20y6m/actions-setup-msvc-env@v2
         with:
           arch: x64
-          vsversion: "2022"
+          toolset: "v143"
 
       - name: Create work directory
         shell: pwsh
@@ -386,10 +386,13 @@ jobs:
         working-directory: work\inst
         run: Get-ChildItem -Filter "*.pdb" -Recurse | Remove-Item -Force -Verbose
 
-      - name: Copy vcruntime
-        shell: pwsh
-        run: .github\scripts\copy-vc-runtime.ps1 -Path work\inst\bin -AdditionalDirs @("work\inst\lib\auto","work\inst\site\lib\auto")
-
+      - name: Copy dependent VC++ runtime DLLs
+        uses: h20y6m/actions-copy-vc-runtime@v1
+        with:
+            bindir: work\inst\bin
+            extradirs: |
+              work\inst\lib\auto
+              work\inst\site\lib\auto
       #
 
       - name: Create zip
